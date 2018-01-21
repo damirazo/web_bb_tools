@@ -4,6 +4,7 @@ import sys
 from functools import partial
 from commands import show_info, checkout, pull, help
 
+
 # Путь до директории с компонентами приложения
 WEB_BB_PROJECT_DIR = '/Users/damirazo/projects/web_bb'
 

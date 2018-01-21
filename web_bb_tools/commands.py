@@ -94,7 +94,7 @@ def checkout(all_packages, *args, **kwargs):
 def pull(all_packages, *args, **kwargs):
     u"""Обновление локальных репозиториев
     """
-    for name, repo in repo_iter(all_packages[1:]):
+    for name, repo in repo_iter(all_packages):
         if repo is None:
             continue
 
