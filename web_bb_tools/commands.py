@@ -24,6 +24,15 @@ def repo_iter(all_packages):
             yield name, repo
 
 
+def extract_origin(repo):
+    try:
+        origin = repo.remotes[0]
+    except IndexError:
+        origin = None
+
+    return origin
+
+
 def show_info(all_packages, *args, **kwargs):
     u"""Отображение информации о подключенных репозиториях
     """
@@ -37,7 +46,7 @@ def show_info(all_packages, *args, **kwargs):
         results.append((name, repo and repo.head.reference or None))
 
     for name, branch_name in results:
-        name_row = name.ljust(30)
+        name_row = name.ljust(30, u'\u00B7')
         if branch_name is not None:
             row = color(u'{}{}'.format(name_row, branch_name), Color.FG.green)
         else:
@@ -61,28 +70,25 @@ def checkout(all_packages, *args, **kwargs):
         if repo is None:
             continue
 
-        local_branch_names = [x.name for x in repo.heads]
-        if branch_name in local_branch_names:
-            repo.git.checkout(branch_name)
-            repo.head.reset(index=True, working_tree=True)
-            continue
+        origin = extract_origin(repo)
+        if origin is None:
+            raise RuntimeError
 
-        try:
-            origin = repo.remotes[0]
-        except IndexError:
-            raise RuntimeError((
-                u'Репозиторий "{}" не связан с внешним репозиторием'
-            ).format(name))
+        new_branch = list(filter(lambda x: x.name == branch_name, repo.heads))
+        if new_branch:
+            new_branch = new_branch[0]
+        else:
+            if not hasattr(origin.refs, branch_name):
+                raise RuntimeError((
+                    u'Ветка {} отсутствует на удаленном репозитории'
+                ).format(branch_name))
 
-        if not hasattr(origin.refs, branch_name):
-            raise RuntimeError((
-                u'Ветка {} отсутствует на удаленном репозитории'
-            ).format(branch_name))
+            new_branch = repo.create_head(
+                branch_name,
+                getattr(origin.refs, branch_name),
+            )
 
-        repo.create_head(
-            branch_name,
-            getattr(origin.refs, branch_name)
-        ).set_tracking_branch(
+        new_branch.set_tracking_branch(
             getattr(origin.refs, branch_name)
         ).checkout()
 
@@ -108,7 +114,11 @@ def pull(all_packages, *args, **kwargs):
         try:
             origin.pull()
         except Exception as exc:
-            print(u'{}[{}]'.format(name.ljust(34), color('X', Color.FG.red)))
+            print(u'{}[{}] ({})'.format(
+                name.ljust(34),
+                color('X', Color.FG.red),
+                str(exc).replace('\n', ';'),
+            ))
         else:
             print(u'{}[{}]'.format(name.ljust(34), color('V', Color.FG.green)))
 
