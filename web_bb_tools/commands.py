@@ -5,6 +5,10 @@ from git import Repo, InvalidGitRepositoryError
 from utils import color, Color
 
 
+# Отступ до значений строк от края консоли
+LJUST_NUM = 30
+
+
 def repo_iter(all_packages):
     u"""
     Итератор по репозиториям.
@@ -43,15 +47,26 @@ def show_info(all_packages, *args, **kwargs):
         if len(name) > max_name:
             max_name = len(name)
 
-        results.append((name, repo and repo.head.reference or None))
+        results.append((
+            name,
+            repo and repo.head.reference or None,
+            repo and repo.is_dirty() or None,
+        ))
 
-    for name, branch_name in results:
-        name_row = name.ljust(30, u'\u00B7')
+    for name, branch_name, is_dirty in results:
+        name_row = name.ljust(LJUST_NUM, u'\u00B7')
+
         if branch_name is not None:
-            row = color(u'{}{}'.format(name_row, branch_name), Color.FG.green)
+            row = color(u'{}{}\u00B7{}'.format(
+                name_row,
+                is_dirty is None and '' or (
+                    is_dirty and u'\033[31m[+]\033[0m\033[32m' or u'[-]'),
+                str(branch_name),
+            ), Color.FG.green)
         else:
-            row = color(
-                u'{}[отсутствует]'.format(name_row), Color.FG.lightred)
+            row = color(u'{}[отсутствует]'.format(
+                name_row,
+            ), Color.FG.lightred)
 
         print(row)
 
@@ -115,12 +130,14 @@ def pull(all_packages, *args, **kwargs):
             origin.pull()
         except Exception as exc:
             print(u'{}[{}] ({})'.format(
-                name.ljust(34),
+                name.ljust(LJUST_NUM, u'\u00B7'),
                 color('X', Color.FG.red),
                 str(exc).replace('\n', ';'),
             ))
         else:
-            print(u'{}[{}]'.format(name.ljust(34), color('V', Color.FG.green)))
+            print(u'{}[{}]'.format(
+                name.ljust(LJUST_NUM, u'\u00B7'),
+                color('V', Color.FG.green)))
 
 
 def help(*args, **kwargs):
