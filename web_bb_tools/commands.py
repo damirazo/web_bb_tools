@@ -145,7 +145,7 @@ def manage(all_packages, *args, **kwargs):
     u"""
     Выполнение manage.py команды
     """
-    from web_bb import VIRTUALENV_PATH
+    from web_bb import VIRTUALENV_PATH, WEB_BB_SETTINGS, WEB_BB_CONF
 
     if not os.path.exists(VIRTUALENV_PATH):
         raise RuntimeError(u'Не найден исполняемый файл python')
@@ -161,14 +161,25 @@ def manage(all_packages, *args, **kwargs):
         if not os.path.exists(manage_path):
             raise RuntimeError(u'Не удалось найти файл manage.py')
 
-    subprocess.check_call([VIRTUALENV_PATH, manage_path, *sys.argv[2:]])
+    env = os.environ.copy()
+    env['DJANGO_SETTINGS_MODULE'] = WEB_BB_SETTINGS
+    env['WEB_BB_CONF'] = WEB_BB_CONF
+
+    subprocess.call(
+        [VIRTUALENV_PATH, manage_path, *sys.argv[2:]],
+        env=env,
+    )
 
 
 def help(*args, **kwargs):
     u"""Отображение справочной информации
     """
+    def _(s1, s2):
+        print(s2.ljust(15) + s1)
+
     print('WEB_BB_UTILS v0.1')
     print('Список доступных команд:')
-    print('{}Отображение информации о локальных репозиториях'.format('info'.ljust(15)))  # noqa
-    print('{}Переключение всех репозиториев (кроме web_bb_app) на указанную ветку'.format('co [branch]'.ljust(15)))  # noqa
-    print('{}Обновление локальных репозиториев'.format('pull'.ljust(15)))
+
+    _('Отображение информации о локальных репозиториях', 'info')
+    _('Переключение всех репозиториев (кроме web_bb_app) на указанную ветку', 'co [branch]')  # noqa
+    _('Обновление локальных репозиториев', 'pull')
