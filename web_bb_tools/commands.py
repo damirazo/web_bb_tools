@@ -1,5 +1,6 @@
 # coding: utf-8
 import os
+import subprocess
 import sys
 from git import Repo, InvalidGitRepositoryError
 from utils import color, Color
@@ -138,6 +139,29 @@ def pull(all_packages, *args, **kwargs):
             print(u'{}[{}]'.format(
                 name.ljust(LJUST_NUM, u'\u00B7'),
                 color('V', Color.FG.green)))
+
+
+def manage(all_packages, *args, **kwargs):
+    u"""
+    Выполнение manage.py команды
+    """
+    from web_bb import VIRTUALENV_PATH
+
+    if not os.path.exists(VIRTUALENV_PATH):
+        raise RuntimeError(u'Не найден исполняемый файл python')
+
+    wb_app_path = os.path.join(
+        all_packages[0][1],
+        'src', 'web_bb_app')
+
+    manage_path = os.path.join(wb_app_path, 'manage.py')
+    if not os.path.exists(manage_path):
+        manage_path = os.path.join(wb_app_path, 'manage.pyc')
+
+        if not os.path.exists(manage_path):
+            raise RuntimeError(u'Не удалось найти файл manage.py')
+
+    subprocess.check_call([VIRTUALENV_PATH, manage_path, *sys.argv[2:]])
 
 
 def help(*args, **kwargs):

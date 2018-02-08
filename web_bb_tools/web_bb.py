@@ -2,11 +2,12 @@
 import os
 import sys
 from functools import partial
-from commands import show_info, checkout, pull, help
-
+from commands import show_info, checkout, pull, help, manage
 
 # Путь до директории с компонентами приложения
 WEB_BB_PROJECT_DIR = '/Users/damirazo/projects/web_bb'
+# Путь до интерпретатора python из виртуального окружения
+VIRTUALENV_PATH = '/Users/damirazo/.virtualenvs/web_bb/bin/python'
 
 # Пути до установленных пакетов
 join = partial(os.path.join, WEB_BB_PROJECT_DIR)
@@ -25,6 +26,7 @@ AVAILABLE_COMMANDS = (
     ('info', show_info),
     ('co', checkout),
     ('pull', pull),
+    ('m', manage),
 )
 
 
