@@ -1,4 +1,6 @@
 # coding: utf-8
+import os
+from git import Repo, InvalidGitRepositoryError
 
 
 class Color:
@@ -45,3 +47,58 @@ def color(text, fg=None, bg=None):
         text,
         Color.reset,
     )
+
+
+def repo_iter(all_packages):
+    u"""
+    Итератор по репозиториям.
+    В случае отсутствия репозитория возвращает None
+    """
+    for name, path in all_packages:
+        if not os.path.exists(path):
+            yield name, None
+            continue
+
+        try:
+            repo = Repo(path)
+        except InvalidGitRepositoryError:
+            yield name, None
+            continue
+        else:
+            yield name, repo
+
+
+def extract_origin(repo):
+    try:
+        origin = repo.remotes[0]
+    except IndexError:
+        origin = None
+
+    return origin
+
+
+class Cursor:
+    _position = None
+
+    def __init__(self):
+        self._position = 0
+
+    def __call__(self, position=None):
+        if position is None:
+            try:
+                return self._position
+            finally:
+                self._position += 1
+        else:
+            self._position = 0
+
+
+class Key:
+    # Клавиша вверх
+    UP = 259
+    # Клавиша вниз
+    DOWN = 258
+    # Клавиша Q
+    Q = 113
+    # Клавиша пробела
+    SPACE = 32

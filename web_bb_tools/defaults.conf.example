@@ -1,0 +1,67 @@
+[waterfall]
+CELERY_BROKER_URL = amqp://web_bb:web_bb@localhost:5672/web_bb
+USE_WEBSOCKET = True
+TASK_TIME_LIMIT = 14400
+
+[websocket]
+WEBSOCKET_URL = http://localhost
+WEBSOCKET_PORT = 9999
+WEBSOCKET_QUEUE_HOST = localhost
+WEBSOCKET_QUEUE_PORT = 4000
+WEBSOCKET_BACKEND = snakemq
+
+[static]
+ROOT = /Users/damirazo/projects/new_web_bb/static
+DOWNLOADS = /Users/damirazo/projects/new_web_bb/static/downloads
+SCREENSHOTS = /Users/damirazo/projects/new_web_bb/static/screenshots
+
+[runtime]
+DEBUG = True
+TIME_ZONE = Europe/Moscow
+TEST_APPLICATION = True
+
+[style]
+HIDE_BUH_DESKTOP = True
+TEST_APPLICATION_TEXT = ТЕСТОВОЕ ПРИЛОЖЕНИЕ
+
+[logging]
+LOG_PATH = /Users/damirazo/projects/new_web_bb/log
+
+[svody]
+URL = http://93.170.52.101/ria
+
+[salary]
+LOGIN_HTML_NAME = salary_login_fk.html
+DESKTOP_HTML_NAME = salary_desktop_fk.html
+SVODY_REPORT_URL = /zik/getenterprise
+JINN_SERVER_URL = http://10.128.209.12:8080/tccs/SignatureValidationService
+IGNORE_MIGRATION = True
+
+[redis]
+REDIS_HOST = redis://127.0.0.1:6379/4
+
+[admin_panel]
+USERNAME = adminfk2
+FORCE_USE = True
+
+[fias]
+API_URL = http://fias.bars-open.ru/fias/v1/ao/
+CACHE_PREFIX = m3-fias
+CACHE_TIMEOUT = 86400
+SHOW_KLADR_FIELD = False
+DEDICATED_DB = fias_db
+DATABASE_ENGINE = django.db.backends.postgresql_psycopg2
+DATABASE_NAME = fias
+DATABASE_USER = bars_web_bb
+DATABASE_PASSWORD = bars_web_bb
+DATABASE_HOST = 192.168.228.107
+DATABASE_PORT = 5432
+
+[mis]
+MIS_SERVER = http://172.21.21.61/webservice/fhd/contract
+MIS_SYNC_CONTRACT_SEND = False
+MIS_SYNC_CONTRACT_AUTH = True
+MIS_PAID_SERVICES_SERVER = http://172.21.21.61/webservice/fhd/ziklistener
+MIS_PAID_SERVICES_AUTH =True
+MIS_PAID_SERVICES_LOGIN = ksv1
+MIS_PAID_SERVICES_PASSWORD = 12345
