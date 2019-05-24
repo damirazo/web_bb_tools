@@ -110,8 +110,6 @@ def command_checkout(all_packages, *args, **kwargs):
             getattr(origin.refs, branch_name)
         ).checkout()
 
-        repo.head.reset(index=True, working_tree=True)
-
     command_info(all_packages)
 
 
